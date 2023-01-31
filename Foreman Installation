@@ -1,1 +1,106 @@
+Foreman Installation Version 3.5
+-------------------------
+Used Inofficial Guide:        https://computingforgeeks.com/how-to-install-foreman-on-ubuntu-linux-lts/
+Used Official Guide:          https://docs.theforeman.org/3.5/Installing_Server/index-foreman-deb.html
+
+
+VM Sizing
+-------------------------
+CPU:        2 Cores
+Memory:     4 GB
+Disk        40 GB
+
+
+OS Version
+-------------------------
+Install ISO: debian-11.6.0-amd64-netinst.iso
+
+
+HTTP-Proxy (In setup)
+--------------------------
+http://chitt1112:PA_s.s_W0$@webproxy.ch.efgruppe.net:8080
+
+
+OpenSSH Server (In Setup)
+--------------------------
+Installieren
+
+
+Ipv4
+--------------------------
+nano /etc/network/interfaces
+
+iface ens160 inet static
+  address 172.16.9.23
+  netmask 255.255.240.0
+  gateway 172.16.2.9
+  dns-nameservers 172.16.1.32 172.16.1.33
+ 
+ 
+systemctl restart networking
+
+
+Hostname
+--------------------------
+nano /etc/hosts
+
+127.0.0.1 localhost
+172.16.9.23  ch0lxp-fmn0001.ch.efgruppe.net  ch0lxp-fmn0001
+
+Reboot!
+
+Test if IP + Hostname ok
+--------------------------
+ping -c 2 $(hostname -f)
+
+
+nano /etc/apt/apt.conf
+--------------------------
+Acquire::http::Proxy "http://chit1112:PA_s.s_W0$@webproxy.ch.efgruppe.net:8080";
+Acquire::https::Proxy "http://chitt1112:PA_s.s_W0@webproxy.ch.efgruppe.net:8080";
+
+
+
+Update System
+-------------------------
+apt update && apt upgrade -y
+
+
+Installation ca-certificates + wget (Wenn nicht schon vorhanden)
+--------------------------
+apt -y install ca-certificates wget
+
+
+Konfig anpassen wgetrc
+--------------------------
+nano /etc/wgetrc
+
+https_proxy = http://chitt1112:PA_s.s_W0@webproxy.ch.efgruppe.net:8080/
+http_proxy = http://chitt1112:PA_s.s_W0@webproxy.ch.efgruppe.net:8080/
+ftp_proxy = http://chitt1112:PA_s.s_W0@webproxy.ch.efgruppe.net:8080
+
+use_proxy = on
+
+
+Puppet
+--------------------------
+ cd /tmp
+ wget https://apt.puppet.com/puppet7-release-bullseye.deb --no-check-certificate
+
+apt-get install /tmp/puppet7-release-bullseye.deb
+
+
+Foreman Repo
+--------------------------
+wget https://deb.theforeman.org/foreman.asc -O /etc/apt/trusted.gpg.d/foreman.asc --no-check-certificate
+echo "deb http://deb.theforeman.org/ bullseye 3.5" | tee /etc/apt/sources.list.d/foreman.list
+echo "deb http://deb.theforeman.org/ plugins 3.5" | tee -a /etc/apt/sources.list.d/foreman.list
+sudo apt -y install gpg ca-certificates
+
+
+apt-get update
+apt-get upgrade
+apt-get install foreman-installer
+
+
 
